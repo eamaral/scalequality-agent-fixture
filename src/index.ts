@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { applyDiscount, tier } from "./discount";
 
 export function checkout(price: number, discountPct: number) {
