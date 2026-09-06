@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Fixture repo for ScaleQuality Agents end-to-end testing (Fase 2). Intentionally has quality gaps.",
   "scripts": {
-    "test": "jest",
+    "postinstall": "node scripts/scalequality-setup-env.js","test": "jest",
     "build": "tsc"
   },
   "devDependencies": {
