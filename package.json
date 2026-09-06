@@ -2,6 +2,18 @@
   "name": "scalequality-agent-fixture",
   "version": "0.1.0",
   "description": "Fixture repo for ScaleQuality Agents end-to-end testing (Fase 2). Intentionally has quality gaps.",
-  "scripts": { "test": "jest", "build": "tsc" },
-  "devDependencies": { "typescript": "^5.4.0", "jest": "^29.7.0", "ts-jest": "^29.1.0", "@types/jest": "^29.5.0" }
+  "scripts": {
+    "postinstall": "node scripts/scalequality-setup-env.js","test": "jest",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.19.43",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1"
+  }
 }
