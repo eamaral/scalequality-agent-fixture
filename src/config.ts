@@ -1,3 +1,8 @@
 // Application configuration.
-export const API_SECRET = "9f2c4e8b1a7d3f6e0c5b8a2d4f7e1c3b9a6d8f0e2c4b7a1d5e3f";
+// API_SECRET was moved out of the source code; the value now comes from the environment.
+if (!process.env.API_SECRET) {
+    throw new Error("Missing environment variable API_SECRET. Copy .env.example to .env and set it, or set it where the app runs.");
+}
+
+export const API_SECRET = process.env.API_SECRET;
 export const MODEL = "gpt-4o-mini";
