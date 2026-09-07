@@ -1,7 +1,7 @@
 import { applyDiscount, tier } from "./discount";
 
 describe("applyDiscount", () => {
-    it("returns the same price when pct is 0", () => {
+    it("returns full price when pct is 0", () => {
         expect(applyDiscount(100, 0)).toBeCloseTo(100, 2);
     });
 
@@ -9,58 +9,70 @@ describe("applyDiscount", () => {
         expect(applyDiscount(100, 100)).toBeCloseTo(0, 2);
     });
 
-    it("applies a normal discount", () => {
-        expect(applyDiscount(100, 25)).toBeCloseTo(75, 2);
+    it("applies a standard discount", () => {
+        const price = 200;
+        const pct = 25;
+        const expected = Math.round(price * (1 - pct / 100) * 100) / 100;
+        expect(applyDiscount(price, pct)).toBeCloseTo(expected, 2);
+        expect(applyDiscount(price, pct)).toBeCloseTo(150, 2);
     });
 
-    it("applies a fractional discount and rounds to 2 decimals", () => {
-        const expected = Math.round(99.99 * (1 - 10 / 100) * 100) / 100;
-        expect(applyDiscount(99.99, 10)).toBeCloseTo(expected, 2);
-    });
-
-    it("rounds correctly for values needing rounding", () => {
-        const price = 19.99;
+    it("rounds to two decimal places", () => {
+        const price = 9.99;
         const pct = 33;
         const expected = Math.round(price * (1 - pct / 100) * 100) / 100;
         expect(applyDiscount(price, pct)).toBeCloseTo(expected, 2);
+    });
+
+    it("handles a fractional discount result correctly", () => {
+        const price = 10;
+        const pct = 15;
+        const expected = Math.round(price * (1 - pct / 100) * 100) / 100;
+        expect(applyDiscount(price, pct)).toBeCloseTo(expected, 2);
+        expect(applyDiscount(price, pct)).toBeCloseTo(8.5, 2);
     });
 
     it("handles price of 0", () => {
         expect(applyDiscount(0, 50)).toBeCloseTo(0, 2);
     });
 
-    it("throws when pct is below 0", () => {
-        expect(() => applyDiscount(100, -1)).toThrow("pct must be between 0 and 100");
-    });
-
-    it("throws when pct is above 100", () => {
-        expect(() => applyDiscount(100, 101)).toThrow("pct must be between 0 and 100");
-    });
-
-    it("does not throw at boundary pct=0", () => {
+    it("handles boundary pct of 0 without throwing", () => {
         expect(() => applyDiscount(100, 0)).not.toThrow();
     });
 
-    it("does not throw at boundary pct=100", () => {
+    it("handles boundary pct of 100 without throwing", () => {
         expect(() => applyDiscount(100, 100)).not.toThrow();
     });
 
-    it("returns a number type", () => {
-        expect(typeof applyDiscount(50, 20)).toBe("number");
+    it("throws for negative pct", () => {
+        expect(() => applyDiscount(100, -1)).toThrow("pct must be between 0 and 100");
     });
 
-    it("result never exceeds original price for valid pct", () => {
-        const price = 250;
-        const result = applyDiscount(price, 10);
-        expect(result).toBeLessThanOrEqual(price);
-        expect(result).toBeGreaterThanOrEqual(0);
+    it("throws for pct greater than 100", () => {
+        expect(() => applyDiscount(100, 101)).toThrow("pct must be between 0 and 100");
+    });
+
+    it("never returns more than the original price for valid pct", () => {
+        const price = 500;
+        for (let pct = 0; pct <= 100; pct += 10) {
+            expect(applyDiscount(price, pct)).toBeLessThanOrEqual(price);
+        }
+    });
+
+    it("is monotonically non-increasing as pct increases", () => {
+        const price = 500;
+        let prev = applyDiscount(price, 0);
+        for (let pct = 10; pct <= 100; pct += 10) {
+            const current = applyDiscount(price, pct);
+            expect(current).toBeLessThanOrEqual(prev);
+            prev = current;
+        }
     });
 });
 
 describe("tier", () => {
     it("returns bronze for totals below 200", () => {
         expect(tier(0)).toBe("bronze");
-        expect(tier(199)).toBe("bronze");
         expect(tier(199.99)).toBe("bronze");
     });
 
@@ -68,7 +80,7 @@ describe("tier", () => {
         expect(tier(200)).toBe("silver");
     });
 
-    it("returns silver for totals between 200 and 999", () => {
+    it("returns silver for totals between 200 and 999.99", () => {
         expect(tier(500)).toBe("silver");
         expect(tier(999.99)).toBe("silver");
     });

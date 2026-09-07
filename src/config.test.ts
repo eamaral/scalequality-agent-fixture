@@ -17,7 +17,7 @@ describe("config", () => {
     });
 
     it("has the expected length", () => {
-      expect(API_SECRET.length).toBe(52);
+      expect(API_SECRET).toHaveLength(52);
     });
 
     it("contains only lowercase hex characters", () => {

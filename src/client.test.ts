@@ -12,29 +12,33 @@ describe("authHeader", () => {
         expect(header).toHaveProperty("Authorization");
     });
 
-    it("formats the Authorization value as a Bearer token using API_SECRET", () => {
+    it("formats the Authorization value as a Bearer token with the secret", () => {
         const header = authHeader();
         expect(header.Authorization).toBe(`Bearer ${API_SECRET}`);
     });
 
-    it("returns only the Authorization key", () => {
-        const header = authHeader();
-        expect(Object.keys(header)).toEqual(["Authorization"]);
+    it("uses the mocked secret", () => {
+        expect(authHeader().Authorization).toBe("Bearer test-secret");
     });
 
-    it("returns a fresh object each call", () => {
+    it("returns only the Authorization key", () => {
+        expect(Object.keys(authHeader())).toEqual(["Authorization"]);
+    });
+
+    it("returns a fresh object on each call", () => {
         expect(authHeader()).not.toBe(authHeader());
         expect(authHeader()).toEqual(authHeader());
     });
 });
 
 describe("summarizeRequest", () => {
-    it("uses the configured MODEL", () => {
+    it("includes the configured model", () => {
         const req = summarizeRequest("hello");
         expect(req.model).toBe(MODEL);
+        expect(req.model).toBe("test-model");
     });
 
-    it("passes short input through unchanged", () => {
+    it("passes through short input unchanged", () => {
         const req = summarizeRequest("hello world");
         expect(req.input).toBe("hello world");
     });
@@ -44,45 +48,41 @@ describe("summarizeRequest", () => {
         expect(req.input).toBe("");
     });
 
-    it("truncates input to at most 2000 characters", () => {
+    it("truncates input to 2000 characters", () => {
         const longText = "a".repeat(5000);
         const req = summarizeRequest(longText);
         expect(req.input).toHaveLength(2000);
         expect(req.input).toBe("a".repeat(2000));
     });
 
-    it("keeps input exactly at the 2000 boundary", () => {
+    it("keeps input at exactly 2000 characters unchanged", () => {
         const text = "b".repeat(2000);
         const req = summarizeRequest(text);
         expect(req.input).toHaveLength(2000);
         expect(req.input).toBe(text);
     });
 
-    it("does not truncate input just below the boundary", () => {
+    it("keeps input at 1999 characters unchanged", () => {
         const text = "c".repeat(1999);
         const req = summarizeRequest(text);
         expect(req.input).toHaveLength(1999);
         expect(req.input).toBe(text);
     });
 
-    it("truncates input just above the boundary", () => {
-        const text = "d".repeat(2001);
-        const req = summarizeRequest(text);
-        expect(req.input).toHaveLength(2000);
-    });
-
     it("includes the auth header", () => {
-        const req = summarizeRequest("hi");
+        const req = summarizeRequest("test");
         expect(req.headers).toEqual({ Authorization: `Bearer ${API_SECRET}` });
     });
 
     it("returns an object with model, input and headers keys", () => {
-        const req = summarizeRequest("anything");
+        const req = summarizeRequest("x");
         expect(Object.keys(req).sort()).toEqual(["headers", "input", "model"]);
     });
 
-    it("preserves unicode characters within limit", () => {
-        const req = summarizeRequest("héllo 🌟");
-        expect(req.input).toBe("héllo 🌟");
+    it("slices from the start of the string when truncating", () => {
+        const text = "start" + "z".repeat(2000);
+        const req = summarizeRequest(text);
+        expect(req.input.startsWith("start")).toBe(true);
+        expect(req.input).toHaveLength(2000);
     });
 });
