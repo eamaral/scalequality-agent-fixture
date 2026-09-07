@@ -8,31 +8,27 @@ Intentional gaps: no SCA config (dependabot), no tests/coverage.
 
 ## Getting started
 
-This is a Node.js project written in TypeScript, using npm for dependency management. An npm lockfile is present, so use npm to keep installs reproducible.
+This is a Node.js project written in TypeScript, using npm for dependency management. The repository does not pin a Node version.
 
-Install dependencies:
+Install dependencies (an npm lockfile is present):
 
 ```bash
 npm install
 ```
 
-Build the project (runs `tsc`):
+Build the project. This runs `tsc`:
 
 ```bash
 npm run build
 ```
 
-Run the tests (runs jest):
+A `test` script exists in `package.json` and is wired to run jest:
 
 ```bash
 npm run test
 ```
 
-The repository does not pin a Node.js version.
-
-## Configuration
-
-No environment variables are read by the code, and there is no `.env` example in the repository. There is nothing to configure to run the project.
+Note that the repository has no tests yet. Running the command will not execute any test cases until test files are added.
 
 ## Repository layout
 
