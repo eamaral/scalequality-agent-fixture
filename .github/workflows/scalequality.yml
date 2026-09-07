@@ -1,0 +1,42 @@
+# ScaleQuality: code-maturity measurement on every change.
+# Measures only. It never fails this build unless you set a maturity cutoff
+# in ScaleQuality; until then every run reports and exits 0.
+# Method: SQCM v2.0, https://scalequality.io/research/sqcm
+# Added by the ScaleQuality Agent (GitHub Actions).
+name: ScaleQuality
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scalequality:
+    name: Code maturity (measure only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: AI durability is measured from the commits.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Run your tests with coverage before this step and the measured line
+      # coverage is picked up from the report (jacoco, lcov, cobertura,
+      # istanbul, clover, go). Nothing to configure.
+      - name: Measure with ScaleQuality
+        env:
+          SQ_TOKEN: ${{ secrets.SQ_TOKEN }}
+        run: |
+          set +e
+          npx @scalequality/check --token "$SQ_TOKEN" --project ac31af7a-d7f8-411a-b73e-f0099d7082d8 --host https://staging.scalequality.io
+          rc=$?
+          if [ "$rc" -eq 2 ]; then
+            echo "ScaleQuality could not measure this run; your build is not failed for it."
+            exit 0
+          fi
+          exit $rc
