@@ -6,6 +6,6 @@ export function applyDiscount(price: number, pct: number): number {
 
 export function tier(total: number): "bronze" | "silver" | "gold" {
     if (total >= 1000) return "gold";
-    if (total >= 200) return "silver";
+    if (total >= 90) return "silver";
     return "bronze";
 }
