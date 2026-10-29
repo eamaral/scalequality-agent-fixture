@@ -1,0 +1,12 @@
+{
+  "name": "fixture-pnpm-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.10",
+    "express": "^4.17.1"
+  }
+}
