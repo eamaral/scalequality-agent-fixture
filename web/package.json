@@ -1,0 +1,9 @@
+{
+  "name": "fixture-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A front end in its own folder, with its own lockfile (dependency remediation scenario)",
+  "dependencies": {
+    "dompurify": "^3.4.10"
+  }
+}
